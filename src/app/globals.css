@@ -1505,9 +1505,9 @@ em{font-style:normal;color:var(--red)}
 
 @media (max-width:560px){
   .services-reference .section-heading h2,.choose-reference .section-heading h2,.process-reference .section-heading h2{font-size:36px}
-  .services-reference .service-row{grid-template-columns:1fr 46px;gap:10px}
-  .services-reference .service-row h3{font-size:17px;white-space:normal}
-  .services-reference .service-row__number{font-size:13px}
+  .services-reference .service-row,.service-row{grid-template-columns:minmax(0,1fr) 46px;gap:10px;padding:22px 18px}
+  .services-reference .service-row h3,.service-row h3{font-size:17px;line-height:1.35;white-space:normal;word-break:normal;overflow-wrap:normal}
+  .services-reference .service-row__number,.service-row__number{font-size:14px;flex-shrink:0}
   .choose-reference__middle{grid-template-columns:1fr;height:auto;gap:18px}
   .choose-reference__middle>p{padding-left:0;padding-top:16px;border-left:0;border-top:1px solid #ffffff20}
   .choose-reference__bottom{align-items:flex-start;flex-direction:column}
@@ -1674,9 +1674,9 @@ textarea{max-width:100%}
     grid-template-columns:minmax(0,1fr) 54px;
     gap:14px;
   }
-  .service-row__main{min-width:0}
-  .service-row__title{min-width:0;white-space:normal}
-  .service-row__title h3{overflow-wrap:anywhere}
+  .service-row__main{min-width:0;display:flex;align-items:center;gap:12px}
+  .service-row__title{min-width:0;white-space:normal;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .service-row__title h3,.service-row h3{white-space:normal;word-break:normal;overflow-wrap:normal}
   .about-one-clone{
     height:auto;
     padding:82px 0 32px;
