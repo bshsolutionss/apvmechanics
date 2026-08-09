@@ -24,15 +24,15 @@ export function SiteFooter() {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newsEmail }),
+        body: JSON.stringify({ email: newsEmail.trim() }),
       });
 
       if (res.ok) {
-        // Save to admin leads store
+        // Save to admin store endpoint
         await fetch("/api/admin/leads", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: "newsletter", lead: { email: newsEmail } }),
+          body: JSON.stringify({ type: "newsletter", lead: { email: newsEmail.trim() } }),
         }).catch(() => {});
 
         // Save local backup
@@ -40,7 +40,7 @@ export function SiteFooter() {
           const existing = JSON.parse(window.localStorage.getItem("apv-newsletter-leads") ?? "[]");
           window.localStorage.setItem(
             "apv-newsletter-leads",
-            JSON.stringify([...existing, { email: newsEmail, createdAt: new Date().toISOString() }])
+            JSON.stringify([...existing, { email: newsEmail.trim(), createdAt: new Date().toISOString() }])
           );
         } catch {}
 

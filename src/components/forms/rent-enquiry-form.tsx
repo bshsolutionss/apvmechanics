@@ -3,21 +3,53 @@
 import { useState } from "react";
 
 export function RentEnquiryForm() {
-  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
-  const [formData, setFormData] = useState({ name: "", phone: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("submitting");
-    setTimeout(() => {
-      setStatus("success");
-    }, 800);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim() || "rental.lead@apvmechanics.com.au",
+          phone: formData.phone.trim(),
+          service: "Car Rental Enquiry",
+          message: formData.message.trim(),
+        }),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        const data = await res.json();
+        setErrorMessage(data.error || "Failed to send enquiry. Please try again.");
+        setStatus("error");
+      }
+    } catch (err) {
+      setErrorMessage("An unexpected error occurred. Please try again.");
+      setStatus("error");
+    }
   };
 
   if (status === "success") {
     return (
-      <div className="rent-car__success">
-        <strong>Thanks!</strong> We will contact you shortly.
+      <div className="rent-car__success" style={{ padding: "24px", background: "#e8f5e9", borderRadius: "12px", border: "1px solid #c8e6c9", color: "#2e7d32", textAlign: "center" }}>
+        <strong style={{ display: "block", fontSize: "18px", marginBottom: "6px" }}>Enquiry Sent Successfully!</strong>
+        <p style={{ margin: 0, fontSize: "14px", color: "#388e3c" }}>Thank you! Our team will review your vehicle rental request and email/call you shortly.</p>
+        <button
+          onClick={() => setStatus("idle")}
+          style={{ marginTop: "16px", padding: "8px 16px", background: "#ed1c24", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "700", cursor: "pointer", fontSize: "13px" }}
+        >
+          Send Another Enquiry
+        </button>
       </div>
     );
   }
@@ -25,6 +57,12 @@ export function RentEnquiryForm() {
   return (
     <form onSubmit={handleSubmit}>
       <h3>Send An Enquiry</h3>
+
+      {errorMessage && (
+        <div style={{ padding: "10px", background: "#ffe6e6", border: "1px solid #ffc9c9", color: "#ed1c24", borderRadius: "6px", fontSize: "13px", marginBottom: "14px" }}>
+          {errorMessage}
+        </div>
+      )}
 
       <div className="rent-car__field">
         <label htmlFor="rent-name">Name</label>
@@ -35,6 +73,18 @@ export function RentEnquiryForm() {
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+      </div>
+
+      <div className="rent-car__field">
+        <label htmlFor="rent-email">Email Address</label>
+        <input
+          id="rent-email"
+          type="email"
+          placeholder="Your email address"
+          required
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
       </div>
 

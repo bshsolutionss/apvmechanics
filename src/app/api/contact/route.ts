@@ -78,6 +78,55 @@ export async function POST(request: Request) {
       );
     }
 
+    // Send Customer Thank You / Confirmation Email
+    try {
+      const customerHtmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #ed1c24; margin: 0 0 6px 0;">APV Mobile Mechanics</h2>
+            <p style="color: #666666; font-size: 14px; margin: 0;">Hobart Mobile Mechanic Services</p>
+          </div>
+          
+          <h3 style="color: #111111; margin-top: 0;">Hi ${name},</h3>
+          <p style="color: #444444; line-height: 1.6; font-size: 15px;">
+            Thank you for reaching out to <strong>APV Mobile Mechanics</strong>! We have received your enquiry regarding <strong>${service || "Mobile Mechanic Service"}</strong>.
+          </p>
+
+          <div style="padding: 16px; background-color: #f8f9fa; border-left: 4px solid #ed1c24; border-radius: 6px; margin: 20px 0;">
+            <p style="margin: 0 0 6px 0; font-weight: bold; color: #111;">Your Request Summary:</p>
+            <p style="margin: 0 0 4px 0; font-size: 14px; color: #555;"><strong>Service:</strong> ${service || "General Care"}</p>
+            <p style="margin: 0 0 4px 0; font-size: 14px; color: #555;"><strong>Phone:</strong> ${phone || "N/A"}</p>
+            <p style="margin: 0; font-size: 14px; color: #555;"><strong>Message:</strong> ${message}</p>
+          </div>
+
+          <p style="color: #444444; line-height: 1.6; font-size: 15px;">
+            Our expert team will review your enquiry and get back to you as soon as possible.
+          </p>
+
+          <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #eeeeee; font-size: 13px; color: #888888; text-align: center;">
+            <p style="margin: 0 0 4px 0;">Need urgent assistance? Call us directly at <strong>0424 411 375</strong>.</p>
+            <p style="margin: 0;">APV Mobile Mechanics — Coming to your home, office or roadside in Hobart.</p>
+          </div>
+        </div>
+      `;
+
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "APV Mobile Mechanics <onboarding@resend.dev>",
+          to: [email],
+          subject: `Thank you for contacting APV Mobile Mechanics`,
+          html: customerHtmlContent,
+        }),
+      }).catch(() => { });
+    } catch (custErr) {
+      console.warn("Customer confirmation email notice:", custErr);
+    }
+
     // Save to Admin Leads store & Supabase
     try {
       if (supabase) {
@@ -92,7 +141,7 @@ export async function POST(request: Request) {
               status: "new",
             },
           ]);
-        } catch {}
+        } catch { }
       }
 
       await fetch(new URL("/api/admin/leads", request.url).toString(), {
@@ -102,7 +151,7 @@ export async function POST(request: Request) {
           type: "enquiry",
           lead: { name, email, phone, service, message },
         }),
-      }).catch(() => {});
+      }).catch(() => { });
     } catch (saveErr) {
       console.error("Failed to save enquiry lead:", saveErr);
     }
