@@ -28,15 +28,6 @@ export default function Home() {
     <main>
       <HeroCarousel />
       <QuickServiceSelector />
-      <ServicesSection />
-      <AboutCompanySection />
-      <WhyChooseSection />
-      <MarqueeTicker />
-      <ProcessSection />
-      <InnerVideo />
-      <FaqSection />
-      <RentACarSection />
-      <GalleryLightbox />
       <section className="home-terms-section" id="terms" aria-labelledby="home-terms-title">
         <div className="container">
           <div className="home-terms-card">
@@ -48,6 +39,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <ServicesSection />
+      <AboutCompanySection />
+      <WhyChooseSection />
+      <MarqueeTicker />
+      <ProcessSection />
+      <InnerVideo />
+      <FaqSection />
+      <RentACarSection />
+      <GalleryLightbox />
       <HomeContactSection />
     </main>
   );
