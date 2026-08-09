@@ -13,7 +13,7 @@ export function LocationsSection() {
             variant="dark"
             icon={MapPin}
             label="Service Area / Location"
-            value="1-3 Leighland Rd, Claremont TAS 7011"
+            value="We Come To You"
             href={GOOGLE_MAPS_URL}
           />
           <LocationCard

@@ -53,7 +53,7 @@ export function InfoDrawer({ open, onClose }: InfoDrawerProps) {
         <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer">
           <MapPin />
           <span>
-            Get Directions<b>1-3 Leighland Rd, Claremont TAS 7011</b>
+            Get Directions<b>We Come To You</b>
           </span>
         </a>
         <div className="info-drawer__socials">

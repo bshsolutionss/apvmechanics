@@ -42,7 +42,7 @@ export function HomeContactSection() {
                   rel="noopener noreferrer"
                   style={{ color: "inherit", textDecoration: "underline" }}
                 >
-                  1-3 Leighland Rd, Claremont TAS 7011
+                  We Come To You
                 </a>
               </b>
             </span>

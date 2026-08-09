@@ -34,7 +34,7 @@ export function ContactInfo() {
     { icon: Phone, label: "Phone Number", value: PHONE, href: `tel:${PHONE.replace(/\s+/g, "")}` },
     { icon: Mail, label: "Email Address", value: EMAIL, href: `mailto:${EMAIL}` },
     { icon: Clock3, label: "Opening Hours", value: openingHours, href: null },
-    { icon: MapPin, label: "Get Directions", value: "1-3 Leighland Rd, Claremont TAS 7011", href: GOOGLE_MAPS_URL },
+    { icon: MapPin, label: "Get Directions", value: "We Come To You", href: GOOGLE_MAPS_URL },
   ];
 
   return (
