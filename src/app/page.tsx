@@ -35,7 +35,7 @@ export default function Home() {
       <FaqSection />
       <RentACarSection />
       <GalleryLightbox />
-      <section className="home-terms-section" aria-labelledby="home-terms-title">
+      <section className="home-terms-section" id="terms" aria-labelledby="home-terms-title">
         <div className="container">
           <div className="home-terms-card">
             <div>

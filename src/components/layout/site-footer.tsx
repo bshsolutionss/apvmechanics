@@ -119,7 +119,7 @@ export function SiteFooter() {
 
             <div className="footer-bottom-right">
               <nav className="footer-legal-nav" aria-label="Legal navigation">
-                <Link href="/#terms-of-service">Terms of Service</Link>
+                <Link href="/#terms">Terms & Conditions</Link>
                 <Link href="/privacy-policy">Privacy Policy</Link>
               </nav>
             </div>
