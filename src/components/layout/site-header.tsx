@@ -71,8 +71,8 @@ export function SiteHeader() {
             })}
           </nav>
           <div className="header__tools">
-            <a className="header__call" href={`tel:${PHONE.replace(/\s+/g, "")}`}>
-              <i><Phone /></i>
+            <a className="header__call" href={`tel:${PHONE.replace(/\s+/g, "")}`} aria-label={`Call APV Mobile Mechanics at ${PHONE}`}>
+              <i><Phone aria-hidden="true" /></i>
               <span><small>Call Any Time</small><b>{PHONE}</b></span>
             </a>
             <MobileMenu />

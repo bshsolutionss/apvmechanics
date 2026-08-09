@@ -21,8 +21,8 @@ export type CommerceContextValue = {
 };
 
 const CommerceContext = createContext<CommerceContextValue | null>(null);
-const CART_KEY = "automart-cart";
-const WISHLIST_KEY = "automart-wishlist";
+const CART_KEY = "apv-cart";
+const WISHLIST_KEY = "apv-wishlist";
 
 function readStored<T>(key: string, fallback: T): T {
   try {

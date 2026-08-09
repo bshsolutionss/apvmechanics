@@ -18,6 +18,14 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
 
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
+    const honeypot = form.get("website") as string;
+    if (honeypot) {
+      // Bot detected: fake success silently
+      setSent(true);
+      setLoading(false);
+      return;
+    }
+
     const payload: ContactPayload = {
       name: form.get("name") as string,
       email: form.get("email") as string,
@@ -50,8 +58,10 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <form className={`automart-form ${compact ? "automart-form--compact" : ""}`} onSubmit={submit}>
+    <form className={`apv-contact-form automart-form ${compact ? "automart-form--compact" : ""}`} onSubmit={submit}>
       <h2>Get A Free Quote</h2>
+      {/* Anti-spam honeypot input */}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" style={{ display: "none", position: "absolute", left: "-9999px" }} aria-hidden="true" />
       {error && (
         <div style={{ color: "#d90429", padding: "10px 14px", borderRadius: "6px", backgroundColor: "#ffe6e6", marginBottom: "15px", display: "flex", alignItems: "center", gap: "8px", fontSize: "14px" }}>
           <AlertCircle size={18} />

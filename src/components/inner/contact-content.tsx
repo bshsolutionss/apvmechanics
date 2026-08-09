@@ -1,13 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Clock3, Mail, MapPin, Phone } from "lucide-react";
 import { LocalContactForm } from "@/components/forms/contact-form";
 import { LocationCard } from "@/components/cards/location-card";
 import { EMAIL, GOOGLE_MAPS_EMBED, GOOGLE_MAPS_URL, OPENING_HOURS, PHONE } from "@/constants";
 
 export function ContactInfo() {
+  const [openingHours, setOpeningHours] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return window.localStorage.getItem("apv-opening-hours") || OPENING_HOURS;
+      } catch {}
+    }
+    return OPENING_HOURS;
+  });
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.openingHours) {
+          setOpeningHours(data.openingHours);
+          try {
+            window.localStorage.setItem("apv-opening-hours", data.openingHours);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const items = [
     { icon: Phone, label: "Phone Number", value: PHONE, href: `tel:${PHONE.replace(/\s+/g, "")}` },
     { icon: Mail, label: "Email Address", value: EMAIL, href: `mailto:${EMAIL}` },
-    { icon: Clock3, label: "Opening Hours", value: OPENING_HOURS, href: null },
+    { icon: Clock3, label: "Opening Hours", value: openingHours, href: null },
     { icon: MapPin, label: "Get Directions", value: "1-3 Leighland Rd, Claremont TAS 7011", href: GOOGLE_MAPS_URL },
   ];
 

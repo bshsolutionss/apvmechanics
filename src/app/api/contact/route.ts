@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   try {
@@ -75,6 +76,35 @@ export async function POST(request: Request) {
         { error: responseData.message || "Failed to send email." },
         { status: resendResponse.status }
       );
+    }
+
+    // Save to Admin Leads store & Supabase
+    try {
+      if (supabase) {
+        try {
+          await supabase.from("enquiries").insert([
+            {
+              name,
+              email,
+              phone: phone || "N/A",
+              service: service || "General Care",
+              message,
+              status: "new",
+            },
+          ]);
+        } catch {}
+      }
+
+      await fetch(new URL("/api/admin/leads", request.url).toString(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "enquiry",
+          lead: { name, email, phone, service, message },
+        }),
+      }).catch(() => {});
+    } catch (saveErr) {
+      console.error("Failed to save enquiry lead:", saveErr);
     }
 
     return NextResponse.json({ success: true, data: responseData });

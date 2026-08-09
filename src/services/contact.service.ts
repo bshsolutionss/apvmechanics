@@ -16,9 +16,9 @@ export class ContactService {
 
     // Local backup storage save
     try {
-      const existing = JSON.parse(window.localStorage.getItem("automart-enquiries") ?? "[]") as unknown[];
+      const existing = JSON.parse(window.localStorage.getItem("apv-enquiries") ?? "[]") as unknown[];
       window.localStorage.setItem(
-        "automart-enquiries",
+        "apv-enquiries",
         JSON.stringify([...existing, { ...payload, createdAt: new Date().toISOString() }])
       );
     } catch {

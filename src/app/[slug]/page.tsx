@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ServiceDetailsContent } from "@/components/inner/route-pages";
+import { ServiceDetailsContent } from "@/features/services";
 import { services } from "@/lib/site-data";
 
 type Props = {

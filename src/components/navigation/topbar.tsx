@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronsRight, Clock3, Mail, Menu } from "lucide-react";
 import { EMAIL, OPENING_HOURS } from "@/constants";
@@ -7,6 +10,30 @@ export interface TopbarProps {
 }
 
 export function Topbar({ onOpenDrawer }: TopbarProps) {
+  const [openingHours, setOpeningHours] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return window.localStorage.getItem("apv-opening-hours") || OPENING_HOURS;
+      } catch {}
+    }
+    return OPENING_HOURS;
+  });
+
+  useEffect(() => {
+    // Fetch live settings asynchronously from API
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.openingHours) {
+          setOpeningHours(data.openingHours);
+          try {
+            window.localStorage.setItem("apv-opening-hours", data.openingHours);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="topbar">
       <div className="topbar__inner">
@@ -21,7 +48,7 @@ export function Topbar({ onOpenDrawer }: TopbarProps) {
           <Clock3 />
           <span>
             <b>Opening Hours :</b>
-            <small>{OPENING_HOURS}</small>
+            <small>{openingHours}</small>
           </span>
         </div>
         <div className="topbar__actions">

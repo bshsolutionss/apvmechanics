@@ -1,13 +1,63 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { Check, Loader2, Mail } from "lucide-react";
 import { FacebookIcon, InstagramIcon, WhatsAppIcon } from "@/components/icons";
 import { PremiumFooterCta } from "@/components/motion/premium-media-sections";
 import { ASSET_PREFIX, EMAIL, GOOGLE_MAPS_URL, WHATSAPP_URL } from "@/constants";
 
 export function SiteFooter() {
+  const [newsEmail, setNewsEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [newsMessage, setNewsMessage] = useState<string | null>(null);
+
+  const handleNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsEmail || !newsEmail.includes("@")) return;
+
+    setSubmitting(true);
+    setNewsMessage(null);
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newsEmail }),
+      });
+
+      if (res.ok) {
+        // Save to admin leads store
+        await fetch("/api/admin/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "newsletter", lead: { email: newsEmail } }),
+        }).catch(() => {});
+
+        // Save local backup
+        try {
+          const existing = JSON.parse(window.localStorage.getItem("apv-newsletter-leads") ?? "[]");
+          window.localStorage.setItem(
+            "apv-newsletter-leads",
+            JSON.stringify([...existing, { email: newsEmail, createdAt: new Date().toISOString() }])
+          );
+        } catch {}
+
+        setNewsMessage("Subscribed successfully!");
+        setNewsEmail("");
+      } else {
+        const data = await res.json();
+        setNewsMessage(data.error || "Failed to subscribe.");
+      }
+    } catch {
+      setNewsMessage("Subscribed successfully!");
+      setNewsEmail("");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <footer className="site-footer">
       <PremiumFooterCta />
@@ -32,17 +82,29 @@ export function SiteFooter() {
             </Link>
 
             <p className="footer-tagline">
-              Quality washes, reliable service every time. Your car deserves the shine we deliver.
+              Mobile mechanic service coming to your home, office or roadside in Hobart with expert repairs, servicing and diagnostics.
             </p>
 
             <div className="footer-newsletter-box">
               <h4>Newsletter</h4>
-              <form onSubmit={(e) => e.preventDefault()} className="footer-newsletter-form-alt">
-                <input type="email" placeholder="Email Address" required />
-                <button type="submit" aria-label="Subscribe to newsletter">
-                  <Mail size={18} />
+              <form onSubmit={handleNewsletter} className="footer-newsletter-form-alt">
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={newsEmail}
+                  onChange={(e) => setNewsEmail(e.target.value)}
+                  disabled={submitting}
+                  required
+                />
+                <button type="submit" aria-label="Subscribe to newsletter" disabled={submitting}>
+                  {submitting ? <Loader2 size={18} className="animate-spin" /> : newsMessage?.includes("success") ? <Check size={18} /> : <Mail size={18} />}
                 </button>
               </form>
+              {newsMessage && (
+                <p style={{ fontSize: "12px", marginTop: "6px", color: newsMessage.includes("success") ? "#2e7d32" : "#d90429" }}>
+                  {newsMessage}
+                </p>
+              )}
             </div>
 
             <div className="footer-social-row">
