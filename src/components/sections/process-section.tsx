@@ -13,7 +13,7 @@ export function ProcessSection({ id = "pages" }: { id?: string }) {
   return (
     <section className="section process process-reference" id={id}>
       <div className="container">
-        <SectionHeading light eyebrow="OUR WORK PROCESS" title={<>Step-by-Step Car Repair Process</>} animatedText="Step-by-Step Car Repair Process" center />
+        <SectionHeading eyebrow="OUR WORK PROCESS" title={<>Step-by-Step Car Repair Process</>} animatedText="Step-by-Step Car Repair Process" center />
         <div className="process-grid">
           {processItems.map(({ num, title, icon, desc }, index) => (
             <ProcessStepCard

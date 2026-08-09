@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { HeroCarousel } from "@/components/home/hero-carousel";
-import { QuickServiceSelector } from "@/components/home/quick-service-selector";
 import { ServicesSection } from "@/components/sections/services-section";
 import { AboutCompanySection, InnerVideo } from "@/components/inner/about-sections";
 import { WhyChooseSection } from "@/components/sections/why-choose-section";
@@ -10,6 +9,7 @@ import { FaqSection } from "@/components/sections/faq-section";
 import { RentACarSection } from "@/components/home/rent-a-car-section";
 import { GalleryLightbox } from "@/components/home/gallery-lightbox";
 import { HomeContactSection } from "@/components/sections/home-contact-section";
+import { TermsConditionsNote } from "@/components/common/terms-conditions-note";
 
 export const metadata: Metadata = {
   title: "Mobile Mechanic Hobart | APV Mobile Mechanics",
@@ -26,7 +26,6 @@ export default function Home() {
   return (
     <main>
       <HeroCarousel />
-      <QuickServiceSelector />
       <ServicesSection />
       <AboutCompanySection />
       <WhyChooseSection />
@@ -36,6 +35,17 @@ export default function Home() {
       <FaqSection />
       <RentACarSection />
       <GalleryLightbox />
+      <section className="home-terms-section" aria-labelledby="home-terms-title">
+        <div className="container">
+          <div className="home-terms-card">
+            <div>
+              <p className="home-terms-kicker">Before we begin</p>
+              <h2 id="home-terms-title">Clear pricing from the start.</h2>
+            </div>
+            <TermsConditionsNote />
+          </div>
+        </div>
+      </section>
       <HomeContactSection />
     </main>
   );

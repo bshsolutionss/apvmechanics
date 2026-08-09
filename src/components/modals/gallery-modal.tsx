@@ -4,12 +4,13 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface GalleryModalProps {
-  activeProject: number;
+  imageSrc: string;
+  imageAlt: string;
   onClose: () => void;
   onChange: (direction: number) => void;
 }
 
-export function GalleryModal({ activeProject, onClose, onChange }: GalleryModalProps) {
+export function GalleryModal({ imageSrc, imageAlt, onClose, onChange }: GalleryModalProps) {
   return (
     <div className="lightbox" role="dialog" aria-modal="true" aria-label="Automotive project gallery">
       <button className="lightbox__close" onClick={onClose} aria-label="Close gallery">
@@ -20,11 +21,12 @@ export function GalleryModal({ activeProject, onClose, onChange }: GalleryModalP
       </button>
       <div className="lightbox__image">
         <Image
-          src={`/assets/images/project/v2-gallery-${activeProject}.jpg`}
-          alt={`Completed automotive project ${activeProject}`}
+          src={imageSrc}
+          alt={imageAlt}
           fill
           sizes="90vw"
           priority
+          style={{ objectFit: "contain" }}
         />
       </div>
       <button className="lightbox__next" onClick={() => onChange(1)} aria-label="Next project">

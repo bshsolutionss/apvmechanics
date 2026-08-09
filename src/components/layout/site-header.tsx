@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Phone } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS, PHONE } from "@/constants";
 import { useScrollHeader } from "@/hooks/use-scroll-header";
@@ -16,13 +16,23 @@ export function SiteHeader() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const stuck = useScrollHeader(100);
 
+  const handleLinkClick = () => {
+    if (typeof document !== "undefined") {
+      (document.activeElement as HTMLElement)?.blur();
+    }
+  };
+
+  useEffect(() => {
+    handleLinkClick();
+  }, [pathname]);
+
   return (
     <>
       <Topbar onOpenDrawer={() => setDrawerOpen(true)} />
 
       <header className={`header ${stuck ? "header--stuck" : ""}`}>
         <div className="header__inner">
-          <Link className="logo" href="/" aria-label="APV Mobile Mechanics home">
+          <Link className="logo" href="/" aria-label="APV Mobile Mechanics home" onClick={handleLinkClick}>
             <Image
               className="brand-logo-image"
               src="/assets/images/resources/apv-mobile-mechanics-logo.jpeg"
@@ -43,7 +53,7 @@ export function SiteHeader() {
               const active = item.href ? pathname === item.href : false;
               return (
                 <div className={`nav-item ${items ? "has-dropdown" : ""}`} key={item.label}>
-                  <Link className={active ? "active" : ""} href={item.href}>
+                  <Link className={active ? "active" : ""} href={item.href} onClick={handleLinkClick}>
                     {item.label}
                     {items && <ChevronDown aria-hidden="true" />}
                   </Link>
@@ -51,7 +61,7 @@ export function SiteHeader() {
                     <ul className="nav-dropdown">
                       {items.map(([label, itemHref]) => (
                         <li key={label}>
-                          <Link href={itemHref}>{label}</Link>
+                          <Link href={itemHref} onClick={handleLinkClick}>{label}</Link>
                         </li>
                       ))}
                     </ul>

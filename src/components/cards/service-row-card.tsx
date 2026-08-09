@@ -12,6 +12,7 @@ export interface ServiceRowCardProps {
   index: number;
   slug?: string;
   compactTitle?: boolean;
+  hideDescription?: boolean;
 }
 
 export function ServiceRowCard({
@@ -22,6 +23,7 @@ export function ServiceRowCard({
   index,
   slug,
   compactTitle = false,
+  hideDescription = false,
 }: ServiceRowCardProps) {
   const formattedNumber = String(index + 1).padStart(2, "0");
   const href = slug ? `/${slug}` : "/services";
@@ -29,7 +31,10 @@ export function ServiceRowCard({
   const isCompact = compactTitle || title.length > 25;
 
   return (
-    <article className="service-row" data-reveal-delay={index * 110}>
+    <article
+      className={`service-row${hideDescription ? " service-row--no-description" : ""}`}
+      data-reveal-delay={index * 110}
+    >
       <div className={`service-row__main ${isCompact ? "service-row__main--compact" : ""}`}>
         {Icon && (
           <i className="service-row__icon">
@@ -41,7 +46,7 @@ export function ServiceRowCard({
           <h3>{title}</h3>
         </div>
       </div>
-      <p>{description}</p>
+      {!hideDescription && <p>{description}</p>}
       <Link href={href} aria-label={`View details for ${title}`}>
         <span>View Details</span>
         <ChevronsRight />

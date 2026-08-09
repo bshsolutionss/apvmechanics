@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { ContactService } from "@/services/contact.service";
 import type { ContactPayload } from "@/types/contact.types";
+import { TermsConditionsNote } from "@/components/common/terms-conditions-note";
 
 export function ContactForm({ compact = false }: { compact?: boolean }) {
   const [sent, setSent] = useState(false);
@@ -81,11 +82,7 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
       <button className="primary-action" type="submit" disabled={loading} style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "wait" : "pointer" }}>
         {loading ? "Sending Message..." : "Send Message"}
       </button>
-      <div className="form-terms-note" style={{ marginTop: "16px", padding: "12px 14px", borderRadius: "6px", backgroundColor: "#f8f9fa", border: "1px solid #e9ecef", fontSize: "12px", color: "#555", lineHeight: "1.5" }}>
-        <p style={{ margin: 0 }}>
-          <strong style={{ color: "#333" }}>Terms &amp; Conditions:</strong> The $70 call-out fee covers travel to your location and an initial inspection. The fee applies whether or not you proceed with repairs. Additional charges may apply for further diagnosis, labour, repairs or parts. All additional work will be discussed before proceeding.
-        </p>
-      </div>
+      <TermsConditionsNote className="form-terms-note" />
     </form>
   );
 }

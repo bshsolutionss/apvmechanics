@@ -49,6 +49,7 @@ export function ServicesSection() {
               image={image}
               icon={icon}
               index={index}
+              hideDescription
             />
           ))}
         </div>

@@ -6,7 +6,14 @@ import { useEffect, useState } from "react";
 import { SectionHeading } from "@/components/common/section-heading";
 import { GalleryModal } from "@/components/modals/gallery-modal";
 
-const projects = [1, 2, 3, 4, 5];
+const GALLERY_IMAGES = [
+  { src: "/assets/images/project/apv-real-1.png", alt: "APV mechanic removing a worn engine component during repair" },
+  { src: "/assets/images/project/apv-real-2.jpg", alt: "APV mechanic inspecting serpentine belt and engine pulleys" },
+  { src: "/assets/images/project/apv-real-3.jpg", alt: "APV mobile mechanic working on vehicle engine bay" },
+  { src: "/assets/images/project/apv-real-4.jpg", alt: "Full engine bay inspection on Ford vehicle by APV Mobile Mechanics" },
+  { src: "/assets/images/project/apv-real-5.jpg", alt: "APV mechanic servicing engine components with diagnostic tools" },
+  { src: "/assets/images/project/apv-real-6.jpg", alt: "Close-up engine repair work performed by APV Mobile Mechanics Hobart" },
+];
 
 export function GalleryLightbox() {
   const [active, setActive] = useState<number | null>(null);
@@ -24,7 +31,7 @@ export function GalleryLightbox() {
 
   const change = (direction: number) =>
     setActive((current) =>
-      current === null ? 0 : (current + direction + projects.length) % projects.length
+      current === null ? 0 : (current + direction + GALLERY_IMAGES.length) % GALLERY_IMAGES.length
     );
 
   return (
@@ -37,17 +44,18 @@ export function GalleryLightbox() {
         />
       </div>
       <div className="gallery-grid">
-        {projects.map((n, index) => (
+        {GALLERY_IMAGES.map((img, index) => (
           <button
-            key={n}
+            key={img.src}
             onClick={() => setActive(index)}
-            aria-label={`Open automotive project ${n}`}
+            aria-label={img.alt}
           >
             <Image
-              src={`/assets/images/project/v2-gallery-${n}.jpg`}
-              alt={`Completed automotive project ${n}`}
+              src={img.src}
+              alt={img.alt}
               fill
               sizes="25vw"
+              style={{ objectFit: "cover" }}
             />
             <span>
               <Search />
@@ -57,7 +65,8 @@ export function GalleryLightbox() {
       </div>
       {active !== null && (
         <GalleryModal
-          activeProject={projects[active]}
+          imageSrc={GALLERY_IMAGES[active].src}
+          imageAlt={GALLERY_IMAGES[active].alt}
           onClose={() => setActive(null)}
           onChange={change}
         />
