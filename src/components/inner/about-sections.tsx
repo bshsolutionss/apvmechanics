@@ -16,7 +16,7 @@ export function AboutCompanySection() {
     <section className="about-one-clone inner-about" id="about">
       <div className="container about-clone-grid">
         <div className="about-clone-images" data-reveal>
-          <span className="about-clone-vertical">ABOUT<br/>COMPANY</span>
+          <span className="about-clone-vertical">ABOUT<br />COMPANY</span>
           <div className="about-clone-main">
             <Image
               src={`${ASSET_PREFIX}/generated/apv-about-workshop.webp`}
@@ -39,15 +39,15 @@ export function AboutCompanySection() {
           </div>
         </div>
         <div className="about-clone-content" data-reveal>
-          <SectionHeading eyebrow="ABOUT APV MOBILE MECHANICS" title={<>Hobart's Trusted<br/>Mobile Car Repair</>}/>
+          <SectionHeading eyebrow="ABOUT APV MOBILE MECHANICS" title={<>Hobart&apos;s Trusted<br />Mobile Car Repair</>} />
           <p>APV Mobile Mechanics started with a simple idea. Car owners should not have to take time off work, arrange transport or wait days for a workshop booking just to get a basic repair done. We built our business around bringing full workshop capability directly to driveways, offices and roadsides across Hobart.</p>
           <p>Over the past ten years we have grown from a single mobile unit into a name that Hobart drivers recognise and recommend, having serviced more than five hundred vehicles for families, tradespeople and small businesses who value straightforward advice and lasting repairs.</p>
           <div className="about-clone-features">
-            <div><i><Wrench/></i><span><b>500+ Vehicles Serviced</b><small>Trusted by hundreds of<br/>Hobart drivers.</small></span></div>
-            <div><i><Check/></i><span><b>Fully Certified Mechanics</b><small>Expert care and<br/>lasting repairs.</small></span></div>
+            <div><i><Wrench /></i><span><b>500+ Vehicles Serviced</b><small>Trusted by hundreds of<br />Hobart drivers.</small></span></div>
+            <div><i><Check /></i><span><b>Fully Certified Mechanics</b><small>Expert care and<br />lasting repairs.</small></span></div>
           </div>
           <div className="about-clone-checks">
-            {["Honesty first — we tell you what your car actually needs", "Fair pricing with no hidden call out charges", "Quality parts and workmanship backed by a clear warranty", "Respect for your time — we arrive when we say we will"].map(item=><span key={item}><Check/>{item}</span>)}
+            {["Honesty first — we tell you what your car actually needs", "Fair pricing with no hidden call out charges", "Quality parts and workmanship backed by a clear warranty", "Respect for your time — we arrive when we say we will"].map(item => <span key={item}><Check />{item}</span>)}
           </div>
           <div className="about__bottom">
             <ThemeButton href="/contact">Contact Us</ThemeButton>
@@ -69,7 +69,7 @@ export function InnerVideo() {
 }
 
 export function TeamSection() {
-  return <HomeTeam inner/>;
+  return <HomeTeam inner />;
 }
 
 export function LocationsSection() {
@@ -113,7 +113,7 @@ export function TestimonialsSection() {
   return (
     <section className="section testimonials inner-testimonials">
       <div className="container">
-        <SectionHeading eyebrow="OUR TESTIMONIALS" title={<>About Our Customers <em>Feedback Says</em></>} center/>
+        <SectionHeading eyebrow="OUR TESTIMONIALS" title={<>About Our Customers <em>Feedback Says</em></>} center />
         <div className="testimonial-grid">
           {cards.map(({ name, place, imageIndex }) => (
             <TestimonialCard
