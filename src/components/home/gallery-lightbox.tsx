@@ -7,7 +7,6 @@ import { SectionHeading } from "@/components/common/section-heading";
 import { GalleryModal } from "@/components/modals/gallery-modal";
 
 const GALLERY_IMAGES = [
-  { src: "/assets/images/project/apv-real-1.png", alt: "APV mechanic removing a worn engine component during repair" },
   { src: "/assets/images/project/apv-real-2.jpg", alt: "APV mechanic inspecting serpentine belt and engine pulleys" },
   { src: "/assets/images/project/apv-real-3.jpg", alt: "APV mobile mechanic working on vehicle engine bay" },
   { src: "/assets/images/project/apv-real-4.jpg", alt: "Full engine bay inspection on Ford vehicle by APV Mobile Mechanics" },
