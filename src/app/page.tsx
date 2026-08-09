@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HeroCarousel } from "@/components/home/hero-carousel";
+import { QuickServiceSelector } from "@/components/home/quick-service-selector";
 import { ServicesSection } from "@/components/sections/services-section";
 import { AboutCompanySection, InnerVideo } from "@/components/inner/about-sections";
 import { WhyChooseSection } from "@/components/sections/why-choose-section";
@@ -26,6 +27,7 @@ export default function Home() {
   return (
     <main>
       <HeroCarousel />
+      <QuickServiceSelector />
       <ServicesSection />
       <AboutCompanySection />
       <WhyChooseSection />
