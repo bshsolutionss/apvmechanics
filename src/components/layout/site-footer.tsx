@@ -35,7 +35,7 @@ export function SiteFooter() {
             "apv-newsletter-leads",
             JSON.stringify([...existing, { email: newsEmail.trim(), createdAt: new Date().toISOString() }])
           );
-        } catch {}
+        } catch { }
 
         setNewsMessage("Subscribed successfully!");
         setNewsEmail("");
@@ -69,8 +69,6 @@ export function SiteFooter() {
                 width={175}
                 height={175}
                 style={{ objectFit: "contain", borderRadius: "12px", display: "block" }}
-                unoptimized
-                priority
               />
             </Link>
 
@@ -176,10 +174,20 @@ export function SiteFooter() {
               <nav className="footer-legal-nav" aria-label="Legal navigation">
                 <Link href="/#terms">Terms & Conditions</Link>
                 <Link href="/privacy-policy">Privacy Policy</Link>
+
               </nav>
             </div>
           </div>
         </div>
+      </div>
+      <div className="powered-by-bar">
+        <a
+          href="http://bshsolutionss.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Powered By BSH Solutions
+        </a>
       </div>
     </footer>
   );

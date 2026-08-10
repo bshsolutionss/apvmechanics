@@ -342,7 +342,6 @@ export default function AdminPage() {
                 width={110}
                 height={110}
                 style={{ objectFit: "contain", margin: "0 auto" }}
-                unoptimized
                 priority
               />
             </div>
@@ -422,7 +421,6 @@ export default function AdminPage() {
               width={64}
               height={64}
               style={{ objectFit: "contain", borderRadius: "8px" }}
-              unoptimized
               priority
             />
             <div>

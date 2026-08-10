@@ -34,7 +34,6 @@ export function InfoDrawer({ open, onClose }: InfoDrawerProps) {
           width={130}
           height={130}
           style={{ objectFit: "contain" }}
-          unoptimized
         />
         <p>Professional automotive repair, diagnostics and mobile support delivered with dependable workmanship.</p>
         <h3>Contact Info</h3>

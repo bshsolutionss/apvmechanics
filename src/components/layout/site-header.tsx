@@ -39,7 +39,6 @@ export function SiteHeader() {
               alt="APV Mobile Mechanics"
               width={88}
               height={88}
-              unoptimized
               priority
             />
             <span className="logo__text">
