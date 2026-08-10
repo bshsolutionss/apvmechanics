@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, phone, service, message } = body;
+    const { name, email, phone, suburb, service, message } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -37,6 +37,10 @@ export async function POST(request: Request) {
             <td style="padding: 8px 0; font-weight: bold;">Phone Number:</td>
             <td style="padding: 8px 0;"><a href="tel:${phone}" style="color: #d90429; text-decoration: none;">${phone || "N/A"}</a></td>
           </tr>
+          ${suburb ? `<tr>
+            <td style="padding: 8px 0; font-weight: bold;">Suburb:</td>
+            <td style="padding: 8px 0;">${suburb}</td>
+          </tr>` : ""}
           <tr>
             <td style="padding: 8px 0; font-weight: bold;">Requested Service:</td>
             <td style="padding: 8px 0;">${service || "General Care"}</td>
@@ -96,6 +100,7 @@ export async function POST(request: Request) {
             <p style="margin: 0 0 6px 0; font-weight: bold; color: #111;">Your Request Summary:</p>
             <p style="margin: 0 0 4px 0; font-size: 14px; color: #555;"><strong>Service:</strong> ${service || "General Care"}</p>
             <p style="margin: 0 0 4px 0; font-size: 14px; color: #555;"><strong>Phone:</strong> ${phone || "N/A"}</p>
+            ${suburb ? `<p style="margin: 0 0 4px 0; font-size: 14px; color: #555;"><strong>Suburb:</strong> ${suburb}</p>` : ""}
             <p style="margin: 0; font-size: 14px; color: #555;"><strong>Message:</strong> ${message}</p>
           </div>
 
@@ -136,6 +141,7 @@ export async function POST(request: Request) {
               name,
               email,
               phone: phone || "N/A",
+              suburb: suburb || "N/A",
               service: service || "General Care",
               message,
               status: "new",
@@ -149,7 +155,7 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "enquiry",
-          lead: { name, email, phone, service, message },
+          lead: { name, email, phone, suburb, service, message },
         }),
       }).catch(() => { });
     } catch (saveErr) {

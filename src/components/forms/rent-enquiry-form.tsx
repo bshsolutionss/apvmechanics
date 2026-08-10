@@ -5,7 +5,7 @@ import { useState } from "react";
 export function RentEnquiryForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", suburb: "", message: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +20,7 @@ export function RentEnquiryForm() {
           name: formData.name.trim(),
           email: formData.email.trim() || "rental.lead@apvmechanics.com.au",
           phone: formData.phone.trim(),
+          suburb: formData.suburb.trim(),
           service: "Car Rental Enquiry",
           message: formData.message.trim(),
         }),
@@ -27,7 +28,7 @@ export function RentEnquiryForm() {
 
       if (res.ok) {
         setStatus("success");
-        setFormData({ name: "", email: "", phone: "", message: "" });
+        setFormData({ name: "", email: "", phone: "", suburb: "", message: "" });
       } else {
         const data = await res.json();
         setErrorMessage(data.error || "Failed to send enquiry. Please try again.");
@@ -97,6 +98,18 @@ export function RentEnquiryForm() {
           required
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        />
+      </div>
+
+      <div className="rent-car__field">
+        <label htmlFor="rent-suburb">Suburb</label>
+        <input
+          id="rent-suburb"
+          type="text"
+          placeholder="Your suburb (e.g. Sandy Bay)"
+          required
+          value={formData.suburb}
+          onChange={(e) => setFormData({ ...formData, suburb: e.target.value })}
         />
       </div>
 

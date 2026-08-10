@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
+  Car,
   CheckCircle2,
   Clock,
   Download,
@@ -21,6 +22,7 @@ import {
   Trash2,
   User,
   Users,
+  Wrench,
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase";
 import type { ContactLead, LeadStatus, NewsletterLead } from "@/types/lead.types";
@@ -34,13 +36,16 @@ export default function AdminPage() {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"enquiries" | "newsletter" | "settings">("enquiries");
+  const [activeTab, setActiveTab] = useState<"mechanic" | "rental" | "newsletter" | "settings">("mechanic");
   const [loading, setLoading] = useState(true);
 
   const [enquiries, setEnquiries] = useState<ContactLead[]>([]);
   const [newsletters, setNewsletters] = useState<NewsletterLead[]>([]);
 
   const [openingHoursInput, setOpeningHoursInput] = useState("8:00 AM to 5:00 PM (Monday to Friday)");
+  const [termsConditionsInput, setTermsConditionsInput] = useState(
+    "The $70 call-out fee covers travel to your location and an initial inspection. The fee applies whether or not you proceed with repairs. Additional charges may apply for further diagnosis, labour, repairs or parts. All additional work will be discussed before proceeding."
+  );
   const [savingHours, setSavingHours] = useState(false);
   const [hoursSavedSuccess, setHoursSavedSuccess] = useState(false);
 
@@ -48,6 +53,16 @@ export default function AdminPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
 
   const [selectedMessage, setSelectedMessage] = useState<ContactLead | null>(null);
+
+  // Helper to identify rental leads vs mechanic service leads
+  const isRentalLead = (item: ContactLead) =>
+    item.service === "Car Rental Enquiry" ||
+    item.service.toLowerCase().includes("rental") ||
+    item.service.toLowerCase().includes("rent a car") ||
+    item.service.toLowerCase().includes("car rent");
+
+  const mechanicEnquiries = enquiries.filter((item) => !isRentalLead(item));
+  const rentalEnquiries = enquiries.filter((item) => isRentalLead(item));
 
   // Check active Supabase Auth session on mount
   useEffect(() => {
@@ -140,6 +155,9 @@ export default function AdminPage() {
       if (data.openingHours) {
         setOpeningHoursInput(data.openingHours);
       }
+      if (data.termsConditions) {
+        setTermsConditionsInput(data.termsConditions);
+      }
     } catch { }
   };
 
@@ -163,19 +181,30 @@ export default function AdminPage() {
       const res = await fetch("/api/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ openingHours: openingHoursInput }),
+        body: JSON.stringify({
+          openingHours: openingHoursInput,
+          termsConditions: termsConditionsInput,
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        setOpeningHoursInput(data.openingHours);
-        try {
-          window.localStorage.setItem("apv-opening-hours", data.openingHours);
-        } catch { }
+        if (data.openingHours) {
+          setOpeningHoursInput(data.openingHours);
+          try {
+            window.localStorage.setItem("apv-opening-hours", data.openingHours);
+          } catch { }
+        }
+        if (data.termsConditions) {
+          setTermsConditionsInput(data.termsConditions);
+          try {
+            window.localStorage.setItem("apv-terms-conditions", data.termsConditions);
+          } catch { }
+        }
         setHoursSavedSuccess(true);
         setTimeout(() => setHoursSavedSuccess(false), 4000);
       }
     } catch (err) {
-      console.error("Failed to save opening hours:", err);
+      console.error("Failed to save site settings:", err);
     } finally {
       setSavingHours(false);
     }
@@ -244,11 +273,17 @@ export default function AdminPage() {
 
   const handleExportCSV = () => {
     let csvContent = "";
-    if (activeTab === "enquiries") {
-      csvContent = "Name,Email,Phone,Service,Status,Date,Message\n";
-      enquiries.forEach((e) => {
+    if (activeTab === "mechanic") {
+      csvContent = "Name,Email,Phone,Suburb,Service,Status,Date,Message\n";
+      mechanicEnquiries.forEach((e) => {
         const cleanMsg = (e.message || "").replace(/"/g, '""');
-        csvContent += `"${e.name}","${e.email}","${e.phone}","${e.service}","${e.status}","${e.createdAt}","${cleanMsg}"\n`;
+        csvContent += `"${e.name}","${e.email}","${e.phone}","${e.suburb || "N/A"}","${e.service}","${e.status}","${e.createdAt}","${cleanMsg}"\n`;
+      });
+    } else if (activeTab === "rental") {
+      csvContent = "Name,Email,Phone,Suburb,Service,Status,Date,Message\n";
+      rentalEnquiries.forEach((e) => {
+        const cleanMsg = (e.message || "").replace(/"/g, '""');
+        csvContent += `"${e.name}","${e.email}","${e.phone}","${e.suburb || "N/A"}","${e.service}","${e.status}","${e.createdAt}","${cleanMsg}"\n`;
       });
     } else {
       csvContent = "Email,Status,Subscription Date\n";
@@ -268,11 +303,23 @@ export default function AdminPage() {
   };
 
   // Filtered lists
-  const filteredEnquiries = enquiries.filter((item) => {
+  const filteredMechanicEnquiries = mechanicEnquiries.filter((item) => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.suburb && item.suburb.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      item.service.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const filteredRentalEnquiries = rentalEnquiries.filter((item) => {
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.suburb && item.suburb.toLowerCase().includes(searchQuery.toLowerCase())) ||
       item.service.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || item.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -430,11 +477,21 @@ export default function AdminPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", marginBottom: "30px" }}>
           <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", border: "1px solid #e9ecef", display: "flex", alignItems: "center", gap: "16px" }}>
             <div style={{ width: "48px", height: "48px", background: "#fee2e2", color: "#ed1c24", borderRadius: "10px", display: "grid", placeItems: "center" }}>
-              <MessageSquare size={24} />
+              <Wrench size={24} />
             </div>
             <div>
-              <span style={{ fontSize: "13px", color: "#6c757d", fontWeight: "600" }}>Total Quote Enquiries</span>
-              <h2 style={{ fontSize: "26px", fontWeight: "800", margin: "2px 0 0 0", color: "#111" }}>{enquiries.length}</h2>
+              <span style={{ fontSize: "13px", color: "#6c757d", fontWeight: "600" }}>Mechanic Service Leads</span>
+              <h2 style={{ fontSize: "26px", fontWeight: "800", margin: "2px 0 0 0", color: "#111" }}>{mechanicEnquiries.length}</h2>
+            </div>
+          </div>
+
+          <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", border: "1px solid #e9ecef", display: "flex", alignItems: "center", gap: "16px" }}>
+            <div style={{ width: "48px", height: "48px", background: "#e0f2fe", color: "#0284c7", borderRadius: "10px", display: "grid", placeItems: "center" }}>
+              <Car size={24} />
+            </div>
+            <div>
+              <span style={{ fontSize: "13px", color: "#6c757d", fontWeight: "600" }}>Rent A Car Leads</span>
+              <h2 style={{ fontSize: "26px", fontWeight: "800", margin: "2px 0 0 0", color: "#111" }}>{rentalEnquiries.length}</h2>
             </div>
           </div>
 
@@ -450,16 +507,6 @@ export default function AdminPage() {
 
           <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", border: "1px solid #e9ecef", display: "flex", alignItems: "center", gap: "16px" }}>
             <div style={{ width: "48px", height: "48px", background: "#e8f5e9", color: "#2e7d32", borderRadius: "10px", display: "grid", placeItems: "center" }}>
-              <CheckCircle2 size={24} />
-            </div>
-            <div>
-              <span style={{ fontSize: "13px", color: "#6c757d", fontWeight: "600" }}>Contacted / Actioned</span>
-              <h2 style={{ fontSize: "26px", fontWeight: "800", margin: "2px 0 0 0", color: "#111" }}>{contactedCount}</h2>
-            </div>
-          </div>
-
-          <div style={{ background: "#fff", padding: "20px", borderRadius: "12px", border: "1px solid #e9ecef", display: "flex", alignItems: "center", gap: "16px" }}>
-            <div style={{ width: "48px", height: "48px", background: "#e0f2fe", color: "#0284c7", borderRadius: "10px", display: "grid", placeItems: "center" }}>
               <Users size={24} />
             </div>
             <div>
@@ -473,9 +520,9 @@ export default function AdminPage() {
         <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #e9ecef", overflow: "hidden" }}>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid #e9ecef", gap: "16px" }}>
             {/* Tabs */}
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <button
-                onClick={() => setActiveTab("enquiries")}
+                onClick={() => setActiveTab("mechanic")}
                 style={{
                   padding: "10px 18px",
                   borderRadius: "8px",
@@ -483,11 +530,33 @@ export default function AdminPage() {
                   fontSize: "14px",
                   border: "none",
                   cursor: "pointer",
-                  background: activeTab === "enquiries" ? "#ed1c24" : "#f1f3f5",
-                  color: activeTab === "enquiries" ? "#fff" : "#495057",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: activeTab === "mechanic" ? "#ed1c24" : "#f1f3f5",
+                  color: activeTab === "mechanic" ? "#fff" : "#495057",
                 }}
               >
-                Quote Enquiries ({enquiries.length})
+                <Wrench size={15} /> Mechanic Leads ({mechanicEnquiries.length})
+              </button>
+
+              <button
+                onClick={() => setActiveTab("rental")}
+                style={{
+                  padding: "10px 18px",
+                  borderRadius: "8px",
+                  fontWeight: "700",
+                  fontSize: "14px",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: activeTab === "rental" ? "#ed1c24" : "#f1f3f5",
+                  color: activeTab === "rental" ? "#fff" : "#495057",
+                }}
+              >
+                <Car size={15} /> Rent A Car Leads ({rentalEnquiries.length})
               </button>
 
               <button
@@ -537,7 +606,7 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {activeTab === "enquiries" && (
+                {(activeTab === "mechanic" || activeTab === "rental") && (
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <Filter size={14} style={{ color: "#6c757d" }} />
                     <select
@@ -562,16 +631,16 @@ export default function AdminPage() {
               <div style={{ padding: "32px 24px", maxWidth: "680px" }}>
                 <div style={{ marginBottom: "24px" }}>
                   <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#111", margin: "0 0 6px 0" }}>
-                    Website Business &amp; Opening Hours
+                    Website Business &amp; Site Settings
                   </h3>
                   <p style={{ fontSize: "14px", color: "#6c757d", margin: 0 }}>
-                    Changes made here update your business hours across the website header topbar and contact page in real time.
+                    Changes made here update your business hours and Terms &amp; Conditions note across the website in real time.
                   </p>
                 </div>
 
                 {hoursSavedSuccess && (
                   <div style={{ padding: "12px 16px", borderRadius: "8px", background: "#e8f5e9", border: "1px solid #c8e6c9", color: "#2e7d32", fontSize: "14px", fontWeight: "700", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
-                    <CheckCircle2 size={18} /> Opening hours updated &amp; saved to Supabase successfully!
+                    <CheckCircle2 size={18} /> Site settings updated &amp; saved to Supabase successfully!
                   </div>
                 )}
 
@@ -584,7 +653,7 @@ export default function AdminPage() {
                       <Clock size={18} style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "#adb5bd" }} />
                       <input
                         type="text"
-                        placeholder="e.g. 7:30 AM to 6:00 PM (Monday to Saturday)"
+                        placeholder="e.g. 8:00 AM to 5:00 PM (Monday to Friday)"
                         value={openingHoursInput}
                         onChange={(e) => setOpeningHoursInput(e.target.value)}
                         required
@@ -596,21 +665,39 @@ export default function AdminPage() {
                     </span>
                   </div>
 
+                  <div style={{ marginBottom: "24px" }}>
+                    <label style={{ display: "block", fontSize: "14px", fontWeight: "700", color: "#333", marginBottom: "8px" }}>
+                      Terms &amp; Conditions Note Display Text
+                    </label>
+                    <textarea
+                      rows={4}
+                      placeholder="Write Terms &amp; Conditions note..."
+                      value={termsConditionsInput}
+                      onChange={(e) => setTermsConditionsInput(e.target.value)}
+                      required
+                      style={{ width: "100%", padding: "12px 14px", borderRadius: "8px", border: "1px solid #ced4da", fontSize: "14px", fontWeight: "500", color: "#111", resize: "vertical" }}
+                    />
+                    <span style={{ fontSize: "12px", color: "#6c757d", marginTop: "6px", display: "block" }}>
+                      Appears inside form callouts and terms notices across the website.
+                    </span>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={savingHours}
                     style={{ padding: "12px 24px", background: "#ed1c24", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "15px", cursor: savingHours ? "wait" : "pointer", opacity: savingHours ? 0.7 : 1 }}
                   >
-                    {savingHours ? "Saving to Supabase..." : "Save Opening Hours"}
+                    {savingHours ? "Saving Settings to Supabase..." : "Save Site Settings"}
                   </button>
                 </form>
               </div>
-            ) : activeTab === "enquiries" ? (
+            ) : activeTab === "mechanic" || activeTab === "rental" ? (
               <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
                 <thead>
                   <tr style={{ background: "#f8f9fa", borderBottom: "1px solid #e9ecef", color: "#495057" }}>
                     <th style={{ padding: "14px 20px" }}>Customer</th>
                     <th style={{ padding: "14px 20px" }}>Phone &amp; Email</th>
+                    <th style={{ padding: "14px 20px" }}>Suburb</th>
                     <th style={{ padding: "14px 20px" }}>Service Requested</th>
                     <th style={{ padding: "14px 20px" }}>Date</th>
                     <th style={{ padding: "14px 20px" }}>Status</th>
@@ -618,14 +705,14 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredEnquiries.length === 0 ? (
+                  {(activeTab === "mechanic" ? filteredMechanicEnquiries : filteredRentalEnquiries).length === 0 ? (
                     <tr>
-                      <td colSpan={6} style={{ padding: "40px", textAlign: "center", color: "#6c757d" }}>
-                        No quote enquiries found.
+                      <td colSpan={7} style={{ padding: "40px", textAlign: "center", color: "#6c757d" }}>
+                        {activeTab === "mechanic" ? "No mechanic quote enquiries found." : "No rent a car enquiries found."}
                       </td>
                     </tr>
                   ) : (
-                    filteredEnquiries.map((item) => (
+                    (activeTab === "mechanic" ? filteredMechanicEnquiries : filteredRentalEnquiries).map((item) => (
                       <tr key={item.id} style={{ borderBottom: "1px solid #f1f3f5" }}>
                         <td style={{ padding: "16px 20px", fontWeight: "700", color: "#111" }}>{item.name}</td>
                         <td style={{ padding: "16px 20px" }}>
@@ -639,7 +726,12 @@ export default function AdminPage() {
                           </div>
                         </td>
                         <td style={{ padding: "16px 20px" }}>
-                          <span style={{ padding: "4px 10px", background: "#f1f3f5", borderRadius: "6px", fontSize: "13px", fontWeight: "600" }}>
+                          <span style={{ padding: "4px 10px", background: "#f8f9fa", border: "1px solid #e9ecef", borderRadius: "6px", fontSize: "13px", fontWeight: "600", color: "#333" }}>
+                            {item.suburb || "N/A"}
+                          </span>
+                        </td>
+                        <td style={{ padding: "16px 20px" }}>
+                          <span style={{ padding: "4px 10px", background: activeTab === "rental" ? "#e0f2fe" : "#f1f3f5", color: activeTab === "rental" ? "#0284c7" : "#333", borderRadius: "6px", fontSize: "13px", fontWeight: "600" }}>
                             {item.service}
                           </span>
                         </td>
@@ -770,6 +862,7 @@ export default function AdminPage() {
               <p style={{ margin: "0 0 6px 0" }}><strong>Customer:</strong> {selectedMessage.name}</p>
               <p style={{ margin: "0 0 6px 0" }}><strong>Phone:</strong> <a href={`tel:${selectedMessage.phone}`} style={{ color: "#ed1c24" }}>{selectedMessage.phone}</a></p>
               <p style={{ margin: "0 0 6px 0" }}><strong>Email:</strong> <a href={`mailto:${selectedMessage.email}`} style={{ color: "#ed1c24" }}>{selectedMessage.email}</a></p>
+              <p style={{ margin: "0 0 6px 0" }}><strong>Suburb:</strong> {selectedMessage.suburb || "N/A"}</p>
               <p style={{ margin: 0 }}><strong>Service:</strong> {selectedMessage.service}</p>
             </div>
 

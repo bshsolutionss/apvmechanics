@@ -19,6 +19,7 @@ export function useContactForm() {
       name: form.get("name") as string,
       email: form.get("email") as string,
       phone: form.get("phone") as string,
+      suburb: (form.get("suburb") as string) || "",
       service: form.get("service") as string,
       message: form.get("message") as string,
     };

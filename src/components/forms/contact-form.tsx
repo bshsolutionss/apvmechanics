@@ -30,6 +30,7 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
       name: form.get("name") as string,
       email: form.get("email") as string,
       phone: form.get("phone") as string,
+      suburb: (form.get("suburb") as string) || "",
       service: form.get("service") as string,
       message: form.get("message") as string,
     };
@@ -74,20 +75,21 @@ export function ContactForm({ compact = false }: { compact?: boolean }) {
       </div>
       <div className="form-two">
         <label>Phone Number<input required name="phone" type="tel" placeholder="Phone Number" disabled={loading}/></label>
-        <label>Service
-          <select required name="service" defaultValue="" disabled={loading}>
-            <option value="" disabled>Select Service</option>
-            <option>Mobile Call-Out ($70)</option>
-            <option>Initial Inspection ($70)</option>
-            <option>Mobile Car Repair</option>
-            <option>Engine Diagnosis</option>
-            <option>Brake Repair</option>
-            <option>Battery Replacement</option>
-            <option>Oil Change</option>
-            <option>Emergency Roadside Assistance</option>
-          </select>
-        </label>
+        <label>Suburb<input required name="suburb" type="text" placeholder="Suburb (e.g. Sandy Bay)" disabled={loading}/></label>
       </div>
+      <label>Service
+        <select required name="service" defaultValue="" disabled={loading}>
+          <option value="" disabled>Select Service</option>
+          <option>Mobile Call-Out ($70)</option>
+          <option>Initial Inspection ($70)</option>
+          <option>Mobile Car Repair</option>
+          <option>Engine Diagnosis</option>
+          <option>Brake Repair</option>
+          <option>Battery Replacement</option>
+          <option>Oil Change</option>
+          <option>Emergency Roadside Assistance</option>
+        </select>
+      </label>
       <label>Your Message<textarea required name="message" rows={compact ? 3 : 5} placeholder="Write Your Message" disabled={loading}/></label>
       <button className="primary-action" type="submit" disabled={loading} style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "wait" : "pointer" }}>
         {loading ? "Sending Message..." : "Send Message"}

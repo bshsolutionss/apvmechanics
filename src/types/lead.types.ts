@@ -5,6 +5,7 @@ export interface ContactLead {
   name: string;
   email: string;
   phone: string;
+  suburb?: string;
   service: string;
   message: string;
   createdAt: string;

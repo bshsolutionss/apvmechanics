@@ -5,6 +5,7 @@ export interface ContactPayload {
   email: string;
   phone: string;
   service: string;
+  suburb?: string;
   message: string;
 }
 
@@ -15,6 +16,7 @@ export interface StoredEnquiry extends ContactPayload {
 export interface RentEnquiryPayload {
   name: string;
   phone: string;
+  suburb?: string;
   message: string;
 }
 
