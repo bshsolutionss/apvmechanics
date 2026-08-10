@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { BRAND_RED, EMAIL_FROM, renderEmailLayout } from "@/lib/email-template";
+import { EMAIL, SITE_URL } from "@/constants";
 
 export async function POST(request: Request) {
   try {
@@ -30,6 +32,17 @@ export async function POST(request: Request) {
     if (apiKey) {
       try {
         // 1. Admin Email Notification
+        const adminBodyHtml = `
+          <h2 style="color:${BRAND_RED};margin-top:0;">New Newsletter Subscriber</h2>
+          <p style="color:#444;line-height:1.6;">A new user has subscribed to the APV Mobile Mechanics newsletter:</p>
+          <p style="font-size:16px;font-weight:bold;color:#111;"><a href="mailto:${cleanEmail}" style="color:${BRAND_RED};text-decoration:none;">${cleanEmail}</a></p>
+          <div style="text-align:center;margin-top:24px;">
+            <a href="${SITE_URL}/admin" style="display:inline-block;padding:12px 24px;background-color:${BRAND_RED};color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;">View in Admin Panel</a>
+          </div>
+          <hr style="margin:25px 0 0 0;border:none;border-top:1px solid #eee;" />
+          <p style="font-size:12px;color:#888;margin:15px 0 0 0;">Sent automatically from the APV Mobile Mechanics website.</p>
+        `;
+
         await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -37,22 +50,24 @@ export async function POST(request: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "APV Mobile Mechanics <onboarding@resend.dev>",
-            to: ["apvmobilemechanics@gmail.com"],
+            from: EMAIL_FROM,
+            to: [EMAIL],
             subject: `New Newsletter Subscriber: ${cleanEmail}`,
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-                <h2 style="color: #ed1c24; margin-top: 0;">New Newsletter Subscriber</h2>
-                <p>A new user has subscribed to the APV Mobile Mechanics newsletter:</p>
-                <p style="font-size: 16px; font-weight: bold; color: #111;"><a href="mailto:${cleanEmail}">${cleanEmail}</a></p>
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;" />
-                <p style="font-size: 12px; color: #888;">Sent automatically from the APV Mobile Mechanics website.</p>
-              </div>
-            `,
+            html: renderEmailLayout({ bodyHtml: adminBodyHtml }),
           }),
         }).catch(() => { });
 
         // 2. Customer Welcome / Thank You Email
+        const customerBodyHtml = `
+          <h3 style="color:#111111;margin-top:0;">Thank You for Subscribing!</h3>
+          <p style="color:#444444;line-height:1.6;font-size:15px;">
+            You have successfully subscribed to the <strong>APV Mobile Mechanics</strong> newsletter. We will keep you updated with expert car maintenance tips, service offers, and automotive advice — <strong>we'll get back to you soon</strong> whenever there's something worth sharing.
+          </p>
+          <div style="text-align:center;margin-top:24px;">
+            <a href="${SITE_URL}/services" style="display:inline-block;padding:12px 24px;background-color:${BRAND_RED};color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;font-size:14px;">Explore Our Services</a>
+          </div>
+        `;
+
         await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
@@ -60,27 +75,10 @@ export async function POST(request: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "APV Mobile Mechanics <onboarding@resend.dev>",
+            from: EMAIL_FROM,
             to: [cleanEmail],
             subject: "Welcome to APV Mobile Mechanics Newsletter",
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                  <h2 style="color: #ed1c24; margin: 0 0 6px 0;">APV Mobile Mechanics</h2>
-                  <p style="color: #666666; font-size: 14px; margin: 0;">Hobart Mobile Mechanic Services</p>
-                </div>
-                
-                <h3 style="color: #111111; margin-top: 0;">Thank You for Subscribing!</h3>
-                <p style="color: #444444; line-height: 1.6; font-size: 15px;">
-                  You have successfully subscribed to the <strong>APV Mobile Mechanics</strong> newsletter. We will keep you updated with expert car maintenance tips, service offers, and automotive advice.
-                </p>
-
-                <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #eeeeee; font-size: 13px; color: #888888; text-align: center;">
-                  <p style="margin: 0 0 4px 0;">Need a mobile mechanic in Hobart? Call us anytime at <strong>0424 411 375</strong>.</p>
-                  <p style="margin: 0;">APV Mobile Mechanics — Coming to your home, office or roadside in Hobart.</p>
-                </div>
-              </div>
-            `,
+            html: renderEmailLayout({ bodyHtml: customerBodyHtml, unsubscribeEmail: cleanEmail }),
           }),
         }).catch(() => { });
       } catch (emailErr) {

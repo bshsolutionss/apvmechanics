@@ -57,7 +57,7 @@ export function InfoDrawer({ open, onClose }: InfoDrawerProps) {
           </span>
         </a>
         <div className="info-drawer__socials">
-          <a href="https://www.facebook.com/" aria-label="Facebook">
+          <a href="https://www.facebook.com/Apvmobilemechanics" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
             <b>f</b>
           </a>
           <a

@@ -36,7 +36,11 @@ const jsonLd = {
       "logo": "https://apvmechanics.com.au/assets/images/resources/apv-mobile-mechanics-logo.jpeg",
       "image": "https://apvmechanics.com.au/assets/images/resources/apv-mobile-mechanics-logo.jpeg",
       "hasMap": "https://www.google.com/maps/place/APV+mobile+Mechanics/@-42.7871385,147.2448997,17z/data=!3m1!4b1!4m6!3m5!1s0xaa6e0d2733b06751:0xe9d97dff7c553e69!8m2!3d-42.7871425!4d147.24748!16s%2Fg%2F11z96__8np!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDgwMy4wIKXMDSoASAFQAw%3D%3D",
-      "sameAs": ["https://www.google.com/maps/place/APV+mobile+Mechanics/@-42.7871385,147.2448997,17z/data=!3m1!4b1!4m6!3m5!1s0xaa6e0d2733b06751:0xe9d97dff7c553e69!8m2!3d-42.7871425!4d147.24748!16s%2Fg%2F11z96__8np!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDgwMy4wIKXMDSoASAFQAw%3D%3D"],
+      "sameAs": [
+        "https://www.google.com/maps/place/APV+mobile+Mechanics/@-42.7871385,147.2448997,17z/data=!3m1!4b1!4m6!3m5!1s0xaa6e0d2733b06751:0xe9d97dff7c553e69!8m2!3d-42.7871425!4d147.24748!16s%2Fg%2F11z96__8np!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDgwMy4wIKXMDSoASAFQAw%3D%3D",
+        "https://www.facebook.com/Apvmobilemechanics",
+        "https://www.instagram.com/apvmechanics/"
+      ],
       "priceRange": "$$",
       "openingHours": "Mo-Fr 08:00-17:00",
       "description": "Professional mobile car repair, engine diagnostics, brake repair, battery replacement, and emergency roadside assistance.",

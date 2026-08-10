@@ -28,13 +28,6 @@ export function SiteFooter() {
       });
 
       if (res.ok) {
-        // Save to admin store endpoint
-        await fetch("/api/admin/leads", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type: "newsletter", lead: { email: newsEmail.trim() } }),
-        }).catch(() => {});
-
         // Save local backup
         try {
           const existing = JSON.parse(window.localStorage.getItem("apv-newsletter-leads") ?? "[]");
@@ -108,7 +101,7 @@ export function SiteFooter() {
             </div>
 
             <div className="footer-social-row">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-icon social-icon--fb">
+              <a href="https://www.facebook.com/Apvmobilemechanics" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-icon social-icon--fb">
                 <FacebookIcon />
               </a>
               <a href="https://www.instagram.com/apvmechanics/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-icon social-icon--ig">
